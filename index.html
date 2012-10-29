@@ -1,0 +1,45 @@
+<!--DOCTYPE html-->
+
+<html>
+	<head>
+		<title>Web Synth 1.0</title>
+		<script type="text/javascript" src="js/setup.js"></script>
+		<script type="text/javascript" src="js/qwerty_hancock.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript" src="js/raphael_min.js"></script>
+	</head>
+
+	<body>
+
+	<div id="keyboard"></div>
+		
+	<script>
+
+			$(function () {
+                // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
+                var keyboard = qwertyHancock('keyboard', 600, 150, 3, 'C4', 'white', 'black', 'yellow');
+                var nodes = [];
+                keyboard.keyDown(function (note, frequency) {
+	    						oscillator = audio_context.createOscillator();
+									oscillator.frequency.value = frequency;
+									oscillator.connect(audio_context.destination);
+									oscillator.noteOn(0);
+									nodes.push(oscillator);
+								});
+
+								keyboard.keyUp(function (note, frequency) {
+    							for (var i = 0; i < nodes.length; i++) {
+    								 if (Math.round(nodes[i].frequency.value) === Math.round(frequency)) {
+                            if (typeof nodes[i].noteOff !== 'undefined') {
+                                nodes[i].noteOff(0);
+                            }
+                            nodes[i].disconnect();
+                        }
+                   }
+								})
+            });
+	</script>
+
+
+	</body>
+</html>
